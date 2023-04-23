@@ -1,20 +1,18 @@
-import { Kafka } from 'kafkajs';
-import { KafkaAdmin } from './kafka-admin';
+import { CustomKafka } from '../utils/kafkaHelper';
 import constants from '../utils/constants';
 import { getRandomValueFromArray } from '../utils/producerHelper';
 
-const kafka = new Kafka({
+const kafka = new CustomKafka({
   clientId: 'producer1',
   brokers: ['localhost:9092'],
 });
 
-const admin = new KafkaAdmin(kafka);
+const admin = kafka.getAdmin();
 admin.createTopicIfNotExists(constants.SWORDS_TOPIC);
-
-const producer = kafka.producer();
 
 const sendSwords = async () => {
   try {
+    const producer = await kafka.getProducer();
     await producer.send({
       topic: constants.SWORDS_TOPIC,
       messages: [{ value: getRandomValueFromArray(constants.SWORDS) }],
@@ -26,8 +24,7 @@ const sendSwords = async () => {
 
 const run = async () => {
   // Producing
-  await producer.connect();
   setInterval(sendSwords, 2000);
 };
 
-run().catch(console.error);
+run();

@@ -1,17 +1,14 @@
-import { Kafka } from 'kafkajs';
+import { CustomKafka } from '../utils/kafkaHelper';
 import constants from '../utils/constants';
 
-const kafka = new Kafka({
+const kafka = new CustomKafka({
   clientId: 'producer1',
   brokers: ['localhost:9092'],
 });
 
-const consumer = kafka.consumer({ groupId: 'test-group' });
-
 const run = async () => {
   // Consuming
-  await consumer.connect();
-  await consumer.subscribe({
+  const consumer = await kafka.getConsumer('test-group', {
     topic: constants.SWORDS_TOPIC,
     fromBeginning: true,
   });

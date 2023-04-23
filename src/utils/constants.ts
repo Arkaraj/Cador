@@ -1,5 +1,7 @@
 const constants = {
   SWORDS_TOPIC: 'swords',
+  LIST_TOPIC: 'test',
+  TEST_GROUP: 'test-group',
   SWORDS: [
     'Jian',
     'Longsword',
@@ -9,8 +11,13 @@ const constants = {
     'Basket-hilted sword',
     'Xiphos',
     'Rapier',
+    'Backsword',
+    'Dao',
+    'Khopesh',
+    'Katana',
+    'Sabre',
   ],
-  REDIS_EXPIRATION: 1440,
+  REDIS_EXPIRATION: process.env?.REDIS_EXPIRATION || 1440,
 };
 
 export default constants;

@@ -1,6 +1,6 @@
-import { Admin, Kafka } from 'kafkajs';
+import { Kafka, KafkaConfig, Admin, Producer, Consumer } from 'kafkajs';
 
-export class KafkaAdmin {
+class KafkaAdmin {
   private _admin: Admin;
   constructor(kafka: Kafka) {
     this._admin = kafka.admin();
@@ -42,5 +42,40 @@ export class KafkaAdmin {
 
   private async disconnect() {
     await this._admin.disconnect();
+  }
+}
+
+export class CustomKafka {
+  private _kafka: Kafka;
+  constructor(config: KafkaConfig) {
+    this._kafka = new Kafka(config);
+  }
+
+  public async getProducer() {
+    const producer = this._kafka.producer();
+    await producer.connect();
+    return producer;
+  }
+
+  public async getConsumer(
+    groupId: string,
+    config = { topic: '', fromBeginning: true }
+  ) {
+    const consumer = this._kafka.consumer({ groupId });
+    await consumer.connect();
+    await consumer.subscribe(config);
+    return consumer;
+  }
+
+  public getAdmin() {
+    return new KafkaAdmin(this._kafka);
+  }
+
+  public get kafka(): Kafka {
+    return this._kafka;
+  }
+
+  public async disconnect(process: Producer | Consumer) {
+    await process.disconnect();
   }
 }
